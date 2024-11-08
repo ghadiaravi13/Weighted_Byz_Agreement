@@ -22,7 +22,7 @@ print(np.unique(fault_flag[:int(untrusted_proc_count)],return_counts=True),np.un
 print("\n")
 
 #RHO < 1/4 for Queen's
-faulty_weight = 0.999999999999999
+faulty_weight = 0.20
 correct_weight = 1 - faulty_weight
 weights = np.random.randint(low=500,size=1000)
 weights = weights.astype(np.float64)
