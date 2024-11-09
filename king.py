@@ -68,5 +68,4 @@ def weighted_byzantine_king(total_proc):
                 else: myvalue[proc_id] = king_value
             V[proc_id,proc_id] = myvalue[proc_id]
 
-    # print(np.all(myvalue==1), np.all(myvalue==0))
     return (np.all(myvalue==1), np.all(myvalue==0))

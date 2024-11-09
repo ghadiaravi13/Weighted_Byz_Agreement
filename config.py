@@ -27,7 +27,7 @@ def init(num_processes, algorithm_type):
         faulty_weight = np.random.uniform(0,0.25)
         correct_weight = 1 - faulty_weight
     elif algorithm_type == "King":
-        faulty_weight = 0.35#np.random.uniform(0, 0.33)
+        faulty_weight = np.random.uniform(0, 0.33)
         correct_weight = 1 - faulty_weight
     weights = np.random.randint(low=0.5*num_processes,size=num_processes)
     weights = weights.astype(np.float64)
@@ -55,4 +55,5 @@ def init(num_processes, algorithm_type):
             # queens = top_k_indices
             break
         else: k+=1
+    print(f"fault flag {fault_flag}")
     return weights, fault_flag, alpha_rho

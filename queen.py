@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import config
+import copy
 # trusted_procs = []
 # untrusted_procs = []
 
@@ -50,15 +51,18 @@ import config
 
 # init vector matrix
 
-def weighted_byzantine_queen(total_procs, weights_file=None):
+def weighted_byzantine_queen(total_procs, user_overwrite=None, proposed_values=None):
     # Check if weights_file is provided and load weights
-    if weights_file:
-        weights = np.load(weights_file)  # Load weights from the specified file
-    else:
+    
+    if user_overwrite is None:
         weights, fault_flag, alpha_rho = config.init(total_procs, "Queen")
-
+    else:
+        weights, fault_flag, alpha_rho = user_overwrite # Load weights from the specified file
+    
+    faultySets = {}
     V = np.random.randint(2,size=(total_procs,total_procs))
-    # print(V)
+    if proposed_values is not None:
+        np.fill_diagonal(V,copy.deepcopy(proposed_values))
     myvalue = np.zeros(total_procs)
     myweight = np.zeros(total_procs)
 
@@ -85,10 +89,19 @@ def weighted_byzantine_queen(total_procs, weights_file=None):
         
         #Second Phase
         for proc_id in range(total_procs):
+            if proc_id not in faultySets:
+                faultySet = set()
+            else:
+                faultySet = faultySets[proc_id]
+            queen_value = myvalue[round] if fault_flag[round]=='C' else np.random.choice([0,1]) 
             if(myweight[proc_id]>3/4): 
                 V[proc_id,proc_id] = myvalue[proc_id]
+                if queen_value != myvalue[proc_id]:
+                    faultySet.add(round)
+                    #print("found byzantine queen")
             else: 
-                V[proc_id,proc_id] = myvalue[round] if fault_flag[round]=='C' else np.random.choice([0,1]) # queen value
+                V[proc_id,proc_id] = queen_value # queen value
+            faultySets[proc_id] = faultySet
                 # if(fault_flag[round]=='F'): print("Accepting Byzantine Queen :(")
         # print(f"\nAgreed on 1: {np.all(V.diagonal()==1)}\t Agreed on 0: {np.all(V.diagonal()==0)}\n")
     #     print("\n--------------------------------------\n")
@@ -96,6 +109,6 @@ def weighted_byzantine_queen(total_procs, weights_file=None):
     # print("\n")
 
     # At the end of the function, save the final weights array
-    np.save('queen_final_weights.npy', weights)  # Save final weights as a numpy object
-    return (np.all(V.diagonal()==1),np.all(V.diagonal()==0))
+    #np.save('queen_final_weights.npy', weights)  # Save final weights as a numpy object
+    return (np.all(V.diagonal()==1),np.all(V.diagonal()==0),faultySets,weights,fault_flag,alpha_rho)
     
