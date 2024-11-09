@@ -62,8 +62,11 @@ def weighted_byzantine_king(total_proc):
                     V[:,proc_id] = np.random.choice([0,1])                     # if byzantine, send random value
                     V[proc_id,proc_id] = myvalue[proc_id]
         for proc_id in range(total_proc):
+            king_value = myvalue[round] if fault_flag[round]=='C' else np.random.choice([0,1])
             if myvalue[proc_id] == 2 or myweight[proc_id]<Fraction(2/3):
-                if myvalue[round] == 2: myvalue[proc_id] = 1
-                else: myvalue[proc_id] = myvalue[round]
+                if king_value == 2: myvalue[proc_id] = 1
+                else: myvalue[proc_id] = king_value
+            V[proc_id,proc_id] = myvalue[proc_id]
 
-    print(np.all(myvalue==1), np.all(myvalue==0))
+    # print(np.all(myvalue==1), np.all(myvalue==0))
+    return (np.all(myvalue==1), np.all(myvalue==0))

@@ -50,16 +50,22 @@ import config
 
 # init vector matrix
 
-def weighted_byzantine_queen(total_procs):
-    weights, fault_flag, alpha_rho = config.init(total_procs,"Queen")
+def weighted_byzantine_queen(total_procs, weights_file=None):
+    # Check if weights_file is provided and load weights
+    if weights_file:
+        weights = np.load(weights_file)  # Load weights from the specified file
+    else:
+        weights, fault_flag, alpha_rho = config.init(total_procs, "Queen")
 
     V = np.random.randint(2,size=(total_procs,total_procs))
+    # print(V)
     myvalue = np.zeros(total_procs)
     myweight = np.zeros(total_procs)
 
     for round in range(alpha_rho):
+        # print(f"\n-----------Round: {round}-----------\n")
         #first phase
-
+        
         #send own value to others
         for proc_id in range(total_procs):
             if weights[proc_id]>0:
@@ -78,13 +84,18 @@ def weighted_byzantine_queen(total_procs):
                 myweight[proc_id] = s0
         
         #Second Phase
-        queen_value = myvalue[round] if fault_flag[round]=='C' else np.random.choice([0,1])
-
         for proc_id in range(total_procs):
-            if(myweight[proc_id]>3/4): V[proc_id,proc_id] = myvalue[proc_id]
-            else: V[proc_id,proc_id] = queen_value
+            if(myweight[proc_id]>3/4): 
+                V[proc_id,proc_id] = myvalue[proc_id]
+            else: 
+                V[proc_id,proc_id] = myvalue[round] if fault_flag[round]=='C' else np.random.choice([0,1]) # queen value
+                # if(fault_flag[round]=='F'): print("Accepting Byzantine Queen :(")
+        # print(f"\nAgreed on 1: {np.all(V.diagonal()==1)}\t Agreed on 0: {np.all(V.diagonal()==0)}\n")
+    #     print("\n--------------------------------------\n")
+    # print(f"\nAgreed on 1: {np.all(V.diagonal()==1)}\t Agreed on 0: {np.all(V.diagonal()==0)}\n")
+    # print("\n")
 
-    print(np.all(V.diagonal()==1),np.all(V.diagonal()==0))
-    print("\n")
-
+    # At the end of the function, save the final weights array
+    np.save('queen_final_weights.npy', weights)  # Save final weights as a numpy object
+    return (np.all(V.diagonal()==1),np.all(V.diagonal()==0))
     
