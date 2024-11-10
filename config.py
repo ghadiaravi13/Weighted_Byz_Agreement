@@ -46,12 +46,12 @@ def init(num_processes, algorithm_type):
     # print(weights[fault_flag=='C'].sum())
 
     # alpha_rho
-    k = 2
+    k = 1
     while(1):
         if k==len(weights): 
             alpha_rho = k
             break
-        top_k_indices = np.argpartition(weights, -k)[-k:]
+        top_k_indices = np.argpartition(weights, k)[:k]
         if(weights[top_k_indices].sum()>faulty_weight):
             # print(f"\n--------------------{k} {algorithm_type}s:\n\n",top_k_indices,"\n---------------------\n")
             alpha_rho = k
