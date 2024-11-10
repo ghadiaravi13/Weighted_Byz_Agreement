@@ -2,70 +2,70 @@ import config
 import numpy as np
 from fractions import Fraction
 
-def weighted_byzantine_king(total_proc):
-    weights, fault_flag, alpha_rho = config.init(total_proc,"King")
+def weighted_byzantine_king(total_procs):
+    weights, fault_flag, alpha_rho = config.init(total_procs,"King")
 
-    V = np.random.randint(2,size=(total_proc,total_proc))
-    myvalue = np.random.randint(2,size=total_proc)
-    myweight = np.zeros(total_proc)
+    V = np.random.randint(2,size=(total_procs,total_procs))
+    myvalue = np.random.randint(2,size=total_procs)
+    myweight = np.zeros(total_procs)
 
     for round in range(alpha_rho):
         #first phase
 
         #send own value to others
-        for proc_id in range(total_proc):
-            if weights[proc_id]>0:
+        for procs_id in range(total_procs):
+            if weights[procs_id]>0:
                 # send my value to all
-                if(fault_flag[proc_id]=='C'): V[:,proc_id] = myvalue[proc_id] # if good process, send correct value
+                if(fault_flag[procs_id]=='C'): V[:,procs_id] = myvalue[procs_id] # if good procsess, send correct value
                 else: 
-                    V[:,proc_id] = np.random.choice([0,1])                     # if byzantine, send random value
-                    V[proc_id,proc_id] = myvalue[proc_id]
+                    V[:,procs_id] = np.random.choice([0,1])                     # if byzantine, send random value
+                    V[procs_id,procs_id] = myvalue[procs_id]
         
-        for proc_id in range(total_proc):
-            if weights[proc_id]>0:
-                s1 = np.dot(V[proc_id],weights)
-                s0 = weights.sum() - s1
-                if(s0>=Fraction(2/3)):
-                    myvalue[proc_id] = 0
-                elif(s1>=Fraction(2/3)):
-                    myvalue[proc_id] = 1
-                else:
-                    myvalue[proc_id] = 2
+        for procs_id in range(total_procs):
+            s1 = np.dot(V[procs_id],weights)
+            s0 = weights.sum() - s1
+            if(s0>=Fraction(2/3)):
+                myvalue[procs_id] = 0
+            elif(s1>=Fraction(2/3)):
+                myvalue[procs_id] = 1
+            else:
+                myvalue[procs_id] = 2
         
         #Second Phase
-        for proc_id in range(total_proc):
-            if(weights[proc_id]>0): 
-                V[:,proc_id] = myvalue[proc_id]
-        for proc_id in range(total_proc):
+        for procs_id in range(total_procs):
+            if(weights[procs_id]>0): 
+                V[:,procs_id] = myvalue[procs_id]
+        for procs_id in range(total_procs):
             s0, s1, su = 0.0,0.0,0.0
-            for j in range(len(weights)):
-                if weights[proc_id]>0:
-                    if V[proc_id,j]== 1:
+            for j in range(total_procs):
+                if weights[j]>0:
+                    if V[procs_id,j]== 1:
                         s1 += weights[j]
-                    elif V[proc_id,j]==0:
+                    elif V[procs_id,j]==0:
                         s0 += weights[j]
                     else:
                         su += weights[j]
             if s0>Fraction(1/3):
-                myvalue[proc_id],myweight[proc_id] = 0,s0
+                myvalue[procs_id],myweight[procs_id] = 0,s0
             elif s1>Fraction(1/3):
-                myvalue[proc_id],myweight[proc_id] = 1,s1
+                myvalue[procs_id],myweight[procs_id] = 1,s1
             elif su >Fraction(1/3):
-                myvalue[proc_id],myweight[proc_id] = 2,su
+                myvalue[procs_id],myweight[procs_id] = 2,su
             
         #third phase
 
-        for proc_id in range(total_proc):
-            if round== proc_id:
-                if(fault_flag[proc_id]=='C'): V[:,proc_id] = myvalue[proc_id] # if good process, send correct value
+        for procs_id in range(total_procs):
+            if round== procs_id:
+                if(fault_flag[procs_id]=='C'): V[:,procs_id] = myvalue[procs_id] # if good procsess, send correct value
                 else: 
-                    V[:,proc_id] = np.random.choice([0,1])                     # if byzantine, send random value
-                    V[proc_id,proc_id] = myvalue[proc_id]
-        for proc_id in range(total_proc):
-            king_value = myvalue[round] if fault_flag[round]=='C' else np.random.choice([0,1])
-            if myvalue[proc_id] == 2 or myweight[proc_id]<Fraction(2/3):
-                if king_value == 2: myvalue[proc_id] = 1
-                else: myvalue[proc_id] = king_value
-            V[proc_id,proc_id] = myvalue[proc_id]
+                    V[:,procs_id] = np.random.choice([0,1])                     # if byzantine, send random value
+                    V[procs_id,procs_id] = myvalue[procs_id]
+        
+        for procs_id in range(total_procs):
+            king_value = V[procs_id,round]
+            if myvalue[procs_id] == 2 or myweight[procs_id]<Fraction(2/3):
+                if king_value == 2: myvalue[procs_id] = 1
+                else: myvalue[procs_id] = king_value
+            V[procs_id,procs_id] = myvalue[procs_id]
 
-    return (np.all(myvalue==1), np.all(myvalue==0))
+    return (np.all(myvalue==1), np.all(myvalue==0),(weights, fault_flag, alpha_rho))

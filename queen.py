@@ -63,7 +63,7 @@ def weighted_byzantine_queen(total_procs, user_overwrite=None, proposed_values=N
     V = np.random.randint(2,size=(total_procs,total_procs))
     if proposed_values is not None:
         np.fill_diagonal(V,copy.deepcopy(proposed_values))
-    myvalue = np.zeros(total_procs)
+    myvalue = np.random.randint(2,size=total_procs)
     myweight = np.zeros(total_procs)
 
     for round in range(alpha_rho):
@@ -74,8 +74,10 @@ def weighted_byzantine_queen(total_procs, user_overwrite=None, proposed_values=N
         for proc_id in range(total_procs):
             if weights[proc_id]>0:
                 # send my value to all
-                if(fault_flag[proc_id]=='C'): V[:,proc_id] = V[proc_id,proc_id] # if good process, send correct value
-                else: V[:,proc_id] = np.random.choice([0,1])                     # if byzantine, send random value
+                if(fault_flag[proc_id]=='C'): V[:,proc_id] = myvalue[proc_id] # if good process, send correct value
+                else: 
+                    V[:,proc_id] = np.random.choice([0,1])
+                    V[proc_id,proc_id] = myvalue[proc_id]                     # if byzantine, send random value
         
         for proc_id in range(total_procs):
             s1 = np.dot(V[proc_id],weights)
