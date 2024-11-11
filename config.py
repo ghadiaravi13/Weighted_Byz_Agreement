@@ -29,7 +29,7 @@ def init(num_processes, algorithm_type):
     elif algorithm_type == "King":
         faulty_weight = np.random.uniform(0, 0.33)
         correct_weight = 1 - faulty_weight
-    weights = np.random.randint(low=0.5*num_processes,size=num_processes)
+    weights = np.random.randint(low=1,high=num_processes,size=num_processes)
     weights = weights.astype(np.float64)
     if(faulty_weight==0):
         weights[fault_flag=='F'] == 0.0

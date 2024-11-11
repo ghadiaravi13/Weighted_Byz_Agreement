@@ -63,7 +63,7 @@ def weighted_byzantine_queen(total_procs, user_overwrite=None, proposed_values=N
     V = np.random.randint(2,size=(total_procs,total_procs))
     if proposed_values is not None:
         np.fill_diagonal(V,copy.deepcopy(proposed_values))
-    myvalue = np.random.randint(2,size=total_procs)
+    myvalue = copy.deepcopy(V.diagonal())#np.random.randint(2,size=total_procs)
     myweight = np.zeros(total_procs)
 
     for round in range(alpha_rho):
@@ -98,7 +98,7 @@ def weighted_byzantine_queen(total_procs, user_overwrite=None, proposed_values=N
             queen_value = myvalue[round] if fault_flag[round]=='C' else np.random.choice([0,1]) 
             if(myweight[proc_id]>3/4): 
                 V[proc_id,proc_id] = myvalue[proc_id]
-                if queen_value != myvalue[proc_id]:
+                if queen_value != myvalue[proc_id] and round!=proc_id:
                     faultySet.add(round)
                     #print("found byzantine queen")
             else: 
