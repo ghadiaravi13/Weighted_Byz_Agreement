@@ -1,7 +1,7 @@
 import queen
 import numpy as np
-def queen_update_weight(total_procs):
-    a1,a0,faultySets,weights,faulty_flag,alpha_rho = queen.weighted_byzantine_queen(total_procs)
+def queen_update_weight(total_procs, faulty_weight):
+    a1,a0,faultySets,weights,faulty_flag,alpha_rho = queen.weighted_byzantine_queen(total_procs,faulty_weight)
 
     print(f"initial weight: {weights}\n fault flag: {faulty_flag}")
     suspectWeight = np.zeros((total_procs,total_procs))
