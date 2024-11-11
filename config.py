@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-def init(num_processes, algorithm_type):
+def init(num_processes, algorithm_type, faulty_weight):
     trusted_procs = []
     untrusted_procs = []
 
@@ -22,14 +22,16 @@ def init(num_processes, algorithm_type):
     # print(np.unique(fault_flag[:int(untrusted_proc_count)],return_counts=True),np.unique(fault_flag[int(untrusted_proc_count):],return_counts=True))
     # print("\n")
 
-    if algorithm_type == "Queen":
-        #RHO < 1/4 for Queen's
-        faulty_weight = np.random.uniform(0,0.25)
-        correct_weight = 1 - faulty_weight
-    elif algorithm_type == "King":
-        faulty_weight = np.random.uniform(0, 0.33)
-        correct_weight = 1 - faulty_weight
-    weights = np.random.randint(low=0.5*num_processes,size=num_processes)
+    # if algorithm_type == "Queen":
+    #     #RHO < 1/4 for Queen's
+    #     faulty_weight = np.random.uniform(0,0.25)
+    #     correct_weight = 1 - faulty_weight
+    # elif algorithm_type == "King":
+    #     faulty_weight = np.random.uniform(0, 0.33)
+    #     correct_weight = 1 - faulty_weight
+    faulty_weight = faulty_weight
+    correct_weight = 1-faulty_weight
+    weights = np.random.randint(low=0.5*num_processes,high=num_processes, size=num_processes)
     weights = weights.astype(np.float64)
     if(faulty_weight==0):
         weights[fault_flag=='F'] == 0.0

@@ -51,11 +51,11 @@ import copy
 
 # init vector matrix
 
-def weighted_byzantine_queen(total_procs, user_overwrite=None, proposed_values=None):
+def weighted_byzantine_queen(total_procs, faulty_weight, user_overwrite=None, proposed_values=None):
     # Check if weights_file is provided and load weights
     
     if user_overwrite is None:
-        weights, fault_flag, alpha_rho = config.init(total_procs, "Queen")
+        weights, fault_flag, alpha_rho = config.init(total_procs, "Queen", faulty_weight)
     else:
         weights, fault_flag, alpha_rho = user_overwrite # Load weights from the specified file
     

@@ -1,7 +1,7 @@
 import queen
 import numpy as np
-def queen_update_weight(total_procs):
-    a1,a0,faultySets,weights,faulty_flag,alpha_rho = queen.weighted_byzantine_queen(total_procs)
+def queen_update_weight(total_procs, faulty_weight):
+    a1,a0,faultySets,weights,faulty_flag,alpha_rho = queen.weighted_byzantine_queen(total_procs,faulty_weight)
 
     print(f"initial weight{weights}")
     suspectWeight = np.zeros((total_procs,total_procs))
@@ -27,9 +27,9 @@ def queen_update_weight(total_procs):
         value = 0.0
         for j in range(total_procs):
             if j in faultySet:
-                value = queen.weighted_byzantine_queen(total_procs, (weights,faulty_flag,alpha_rho),proposed_matrix[:,j])
+                value = queen.weighted_byzantine_queen(total_procs, faulty_weight,(weights,faulty_flag,alpha_rho),proposed_matrix[:,j])
             else:
-                value = queen.weighted_byzantine_queen(total_procs,(weights,faulty_flag,alpha_rho),proposed_matrix[:,j])
+                value = queen.weighted_byzantine_queen(total_procs,faulty_weight, (weights,faulty_flag,alpha_rho),proposed_matrix[:,j])
             if value == 1:
                 consensusFaulty.add(j)
         

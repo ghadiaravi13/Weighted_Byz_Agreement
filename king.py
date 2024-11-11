@@ -2,8 +2,8 @@ import config
 import numpy as np
 from fractions import Fraction
 
-def weighted_byzantine_king(total_procs):
-    weights, fault_flag, alpha_rho = config.init(total_procs,"King")
+def weighted_byzantine_king(total_procs, faulty_weight):
+    weights, fault_flag, alpha_rho = config.init(total_procs,"King", faulty_weight)
 
     V = np.random.randint(2,size=(total_procs,total_procs))
     myvalue = np.random.randint(2,size=total_procs)
