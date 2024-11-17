@@ -15,6 +15,11 @@ def weighted_byzantine_queen(total_procs, faulty_weight, user_overwrite=None, pr
     V = np.random.randint(2,size=(total_procs,total_procs))
     if proposed_values is not None:
         np.fill_diagonal(V,copy.deepcopy(proposed_values))
+    else:
+        proposed_values = np.random.randint(2,size=total_procs)
+        proposed_values[fault_flag=='C'] = 1
+        np.fill_diagonal(V,copy.deepcopy(proposed_values))
+    
     myvalue = copy.deepcopy(V.diagonal())#np.random.randint(2,size=total_procs)
     myweight = np.zeros(total_procs)
 
